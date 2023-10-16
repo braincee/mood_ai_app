@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
   boolean,
   char,
@@ -32,7 +33,7 @@ export const journalEntries = mysqlTable(
   {
     id: int('id').autoincrement().primaryKey().notNull(),
     userId: int('user_id').notNull(),
-    content: text('content'),
+    content: text('content').notNull(),
     createdAt: datetime('created_at'),
     updatedAt: datetime('updated_at'),
   },
@@ -68,3 +69,25 @@ export const analysis = mysqlTable(
     }
   }
 )
+
+export const usersRelations = relations(users, ({ many }) => ({
+  journalEntries: many(journalEntries),
+}))
+
+export const journalEntriesRelations = relations(journalEntries, ({ one }) => ({
+  user: one(users, {
+    fields: [journalEntries.userId],
+    references: [users.id],
+  }),
+}))
+
+export const analysisRelations = relations(analysis, ({ one }) => ({
+  user: one(users, {
+    fields: [analysis.userId],
+    references: [users.id],
+  }),
+  entry: one(journalEntries, {
+    fields: [analysis.entryId],
+    references: [journalEntries.id],
+  }),
+}))
