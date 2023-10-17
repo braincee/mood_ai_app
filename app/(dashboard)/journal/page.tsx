@@ -4,17 +4,17 @@ import {Link, Box, Typography, Grid } from '@mui/joy';
 import EntryCard from '@/components/EntryCard';
 import NewEntryCard from '@/components/NewEntryCard';
 import Question from '@/components/Question';
+import { db } from '@/drizzle/db';
+import { journalEntries } from '@/drizzle/schema';
+import { eq } from 'drizzle-orm';
 
-const getEntries = async () => {
+const getEntries = async (id) => {
   const user = await getUserFromClerkID();
-  const entries = await prisma.journalEntry.findMany({
-    where: {
-      userId: user.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  const entries = await db
+  .select()
+  .from(journalEntries)
+  .where(eq(journalEntries.userId, user.id))
+  .orderBy(journalEntries.createdAt);
   return entries;
 };
 

@@ -2,22 +2,23 @@ import Editor from '@/components/Editor'
 import { getUserFromClerkID } from '@/utils/auth'
 import { prisma } from '@/utils/db'
 import { Box } from '@mui/joy';
+import { db } from '@/drizzle/db';
+import { journalEntries } from '@/drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 const getEntry = async (id) => {
     const user = await getUserFromClerkID()
-    const entry = await prisma.journalEntry.findUnique({
-      where: {
-        userId_id: {
-            userId: user.id,
-            id,
-          },
-      },
-      include: {
-        analysis: true
-    }
-    })
+    const entry = await db
+    .select()
+    .from(journalEntries)
+    .where(
+      eq(journalEntries.userId, user.id),
+      eq(journalEntries.id, id)
+    )
+    .include('analysis')
+    .first();
 
-    return entry
+  return entry;
   }
 
 const EntryPage = async({params}) => {

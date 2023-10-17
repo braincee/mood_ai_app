@@ -17,7 +17,7 @@ const createNewUser = async () => {
   const match = await db
     .select()
     .from(users)
-    .where(eq(users.clerkId, user[0].id))
+    .where(eq(users.clerkId, user.id))
 
   if (!match) {
     // await prisma.user.create({
@@ -30,8 +30,8 @@ const createNewUser = async () => {
     await db
       .insert(users)
       .values({
-        clerkId: user[0].id,
-        email: user[0].emailAddresses[0].emailAddress,
+        clerkId: user.id,
+        email: user.emailAddresses[0].emailAddress,
       })
   }
 
