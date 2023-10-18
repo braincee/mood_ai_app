@@ -10,11 +10,12 @@ import { eq } from 'drizzle-orm'
 
 const getEntries = async () => {
   const user = await getUserFromClerkID()
+
   const entries = await db
     .select()
     .from(journalEntries)
     .where(eq(journalEntries.userId, user[0].id))
-    .orderBy(journalEntries.createdAt)
+
   return entries
 }
 
@@ -34,18 +35,20 @@ const JournalPage = async () => {
         <Question />
       </Box>
       <Grid container spacing={2}>
-        <Grid xs={4}>
+        <Grid xs={4} md={6}>
           <NewEntryCard />
         </Grid>
-        {entries.map((entry) => (
-          <Grid key={entry.id} xs={2}>
-            <Link href={`/journal/${entry.id}`}>
-              <p style={{ textDecoration: 'none' }}>
-                <EntryCard entry={entry} />
-              </p>
-            </Link>
-          </Grid>
-        ))}
+        <Grid xs={12} md={6}>
+          {entries.map((entry) => (
+            <Grid key={entry.id} xs={2}>
+              <Link href={`/journal/${entry.id}`}>
+                <p style={{ textDecoration: 'none' }}>
+                  <EntryCard entry={entry} />
+                </p>
+              </Link>
+            </Grid>
+          ))}
+        </Grid>
       </Grid>
     </Box>
   )

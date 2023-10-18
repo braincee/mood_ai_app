@@ -9,14 +9,15 @@ import {
   mysqlTable,
   text,
   uniqueIndex,
+  varchar,
 } from 'drizzle-orm/mysql-core'
 
 export const users = mysqlTable(
   'users',
   {
     id: int('id').autoincrement().primaryKey().notNull(),
-    clerkId: char('clerk_id').notNull(),
-    email: char('email').notNull(),
+    clerkId: varchar('clerk_id', { length: 225 }).notNull(),
+    email: varchar('email', { length: 225 }).notNull(),
     createdAt: datetime('created_at'),
     updatedAt: datetime('updated_at'),
   },

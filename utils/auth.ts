@@ -7,14 +7,17 @@ import { eq } from 'drizzle-orm'
 
 export const getUserFromClerkID = async (select = { id: true }) => {
   const { userId } = auth()
-  const user = await db.select().from(users).where(eq(users.clerkId, userId))
+
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.clerkId, userId as string))
   // const user = await prisma.user.findUniqueOrThrow({
   //   where: {
   //     clerkId: userId as string,
   //   },
   //   select,
   // })
-
   return user
 }
 

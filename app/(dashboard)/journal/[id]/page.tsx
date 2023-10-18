@@ -3,19 +3,16 @@ import { getUserFromClerkID } from '@/utils/auth'
 import { prisma } from '@/utils/db'
 import { Box } from '@mui/joy'
 import { db } from '@/drizzle/db'
-import { journalEntries } from '@/drizzle/schema'
-import { and, eq } from 'drizzle-orm'
 
 const getEntry = async (id: number) => {
   const user = await getUserFromClerkID()
-  const entry = await db
-    .select()
-    .from(journalEntries)
-    .where(
-      and(eq(journalEntries.userId, user[0].id), eq(journalEntries.id, id))
-    )
-  // .include('analysis')
-  // .first()
+  const entry = await db.query.journalEntries.findMany({
+    where: (journalEntries, { eq, and }) =>
+      and(eq(journalEntries.userId, user[0].id), eq(journalEntries.id, id)),
+    with: {
+      analysis: true,
+    },
+  })
 
   return entry
 }

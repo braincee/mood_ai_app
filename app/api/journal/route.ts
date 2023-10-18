@@ -9,9 +9,22 @@ import { NextResponse } from 'next/server'
 
 export const POST = async () => {
   const user = await getUserFromClerkID()
-  await db
-    .insert(journalEntries)
-    .values({ userId: user[0].id, content: 'Write about your daily mood!' })
+
+  const newEntry = await db
+    .select()
+    .from(journalEntries)
+    .where(
+      and(
+        eq(journalEntries.userId, user[0].id),
+        eq(journalEntries.content, 'Write about your daily mood!')
+      )
+    )
+  if (newEntry.length === 0) {
+    await db
+      .insert(journalEntries)
+      .values({ userId: user[0].id, content: 'Write about your daily mood!' })
+  }
+
   // const entry = await prisma.journalEntry.create({
   //     data: {
   //         userId: user.id,
