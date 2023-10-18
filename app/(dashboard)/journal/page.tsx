@@ -1,31 +1,35 @@
-import { getUserFromClerkID } from '@/utils/auth';
-import { prisma } from '@/utils/db';
-import {Link, Box, Typography, Grid } from '@mui/joy';
-import EntryCard from '@/components/EntryCard';
-import NewEntryCard from '@/components/NewEntryCard';
-import Question from '@/components/Question';
-import { db } from '@/drizzle/db';
-import { journalEntries } from '@/drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { getUserFromClerkID } from '@/utils/auth'
+import { prisma } from '@/utils/db'
+import { Link, Box, Typography, Grid } from '@mui/joy'
+import EntryCard from '@/components/EntryCard'
+import NewEntryCard from '@/components/NewEntryCard'
+import Question from '@/components/Question'
+import { db } from '@/drizzle/db'
+import { journalEntries } from '@/drizzle/schema'
+import { eq } from 'drizzle-orm'
 
-const getEntries = async (id) => {
-  const user = await getUserFromClerkID();
+const getEntries = async () => {
+  const user = await getUserFromClerkID()
   const entries = await db
-  .select()
-  .from(journalEntries)
-  .where(eq(journalEntries.userId, user.id))
-  .orderBy(journalEntries.createdAt);
-  return entries;
-};
+    .select()
+    .from(journalEntries)
+    .where(eq(journalEntries.userId, user[0].id))
+    .orderBy(journalEntries.createdAt)
+  return entries
+}
 
 const JournalPage = async () => {
-  const entries = await getEntries();
+  const entries = await getEntries()
 
   return (
-    <Box sx={{ p: 10, backgroundColor: 'rgba(173, 216, 230, 0.1)', height: '100%' }}>
-      <Typography level="h4">
-        Journal
-      </Typography>
+    <Box
+      sx={{
+        p: 10,
+        backgroundColor: 'rgba(173, 216, 230, 0.1)',
+        height: '100%',
+      }}
+    >
+      <Typography level='h4'>Journal</Typography>
       <Box>
         <Question />
       </Box>
@@ -44,7 +48,7 @@ const JournalPage = async () => {
         ))}
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default JournalPage;
+export default JournalPage

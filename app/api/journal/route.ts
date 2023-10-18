@@ -3,7 +3,7 @@ import { analysis, journalEntries } from '@/drizzle/schema'
 import { analyze } from '@/utils/ai'
 import { getUserFromClerkID } from '@/utils/auth'
 import { prisma } from '@/utils/db'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 
@@ -11,7 +11,7 @@ export const POST = async () => {
   const user = await getUserFromClerkID()
   await db
     .insert(journalEntries)
-    .values({ userId: user.id, content: 'Write about your daily mood!' })
+    .values({ userId: user[0].id, content: 'Write about your daily mood!' })
   // const entry = await prisma.journalEntry.create({
   //     data: {
   //         userId: user.id,
@@ -22,10 +22,14 @@ export const POST = async () => {
   const entry = await db
     .select()
     .from(journalEntries)
-    .where(eq(journalEntries.userId, user.id))
-    .where(eq(journalEntries.content, 'Write about your daily mood!'))
+    .where(
+      and(
+        eq(journalEntries.userId, user[0].id),
+        eq(journalEntries.content, 'Write about your daily mood!')
+      )
+    )
 
-  const myAnalysis = await analyze(entry.content)
+  const myAnalysis = await analyze(entry[0].content)
   //   await prisma.analysis.create({
   //     data: {
   //       userId: user.id,
