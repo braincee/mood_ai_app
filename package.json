@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
-    "db:push": "drizzle-kit push:mysql --config=drizzle.config.ts"
+    "db:push": "drizzle-kit push:mysql --config=drizzle.config.ts",
+    "db:generate": "drizzle-kit generate:mysql --config=drizzle.config.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.25.2",

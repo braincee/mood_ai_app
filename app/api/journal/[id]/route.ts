@@ -1,9 +1,9 @@
 import { db } from '@/drizzle/db'
 import { journalEntries, analysis } from '@/drizzle/schema'
-import { analyze } from '@/utils/ai'
+// import { analyze } from '@/utils/ai'
 import { getUserFromClerkID } from '@/utils/auth'
 import { prisma } from '@/utils/db'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export const PATCH = async (
@@ -16,8 +16,12 @@ export const PATCH = async (
   await db
     .update(journalEntries)
     .set({ content: content })
-    .where(eq(journalEntries.id, params.id))
-    .where(eq(journalEntries.userId, user[0].id))
+    .where(
+      and(
+        eq(journalEntries.id, params.id),
+        eq(journalEntries.userId, user[0].id)
+      )
+    )
 
   // const updateEntry = await prisma.journalEntry.update({
   //   where: {
@@ -37,7 +41,14 @@ export const PATCH = async (
     .where(eq(journalEntries.id, params.id))
     .limit(1)
 
-  const myAnalysis = await analyze(updateEntry[0].content)
+  const myAnalysis = {
+    mood: 'Feeling happy',
+    summary: 'The day has been great',
+    color: 'bright',
+    negative: false,
+    subject: 'Strength',
+    sentimentScore: 10,
+  }
 
   // const updated = await prisma.analysis.upsert({
   //   where: {
@@ -52,10 +63,24 @@ export const PATCH = async (
   // })
 
   const updated = await db
-    .insert(analysis)
-    .values({ userId: user[0].id, entryId: updateEntry[0].id, ...myAnalysis })
+    .update(analysis)
+    .set({ ...myAnalysis })
+    .where(
+      and(
+        eq(analysis.userId, user[0].id),
+        eq(analysis.entryId, updateEntry[0].id)
+      )
+    )
 
-  console.log(updated)
+  const updatedAnalysis = await db
+    .select()
+    .from(analysis)
+    .where(
+      and(
+        eq(analysis.userId, user[0].id),
+        eq(analysis.entryId, updateEntry[0].id)
+      )
+    )
 
-  return NextResponse.json({ data: { ...updateEntry, analysis: updated } })
+  return NextResponse.json({ data: { ...updatedAnalysis, analysis: updated } })
 }

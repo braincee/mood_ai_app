@@ -7,6 +7,7 @@ dotenv.config({
 
 export default {
   schema: './drizzle/schema.ts',
+  out: './drizzle/schena-out.ts',
   dbCredentials: {
     connectionString: process.env.DATABASE_URL as string,
   },

@@ -13,10 +13,10 @@ import {
   Grid,
 } from '@mui/joy'
 
-const Editor = ({ entry }: { entry: any }) => {
+const Editor = ({ entry, myAnalysis }: { entry: any; myAnalysis: any }) => {
   const [value, setText] = useState(entry.content)
   const [isLoading, setIsLoading] = useState(false)
-  const [analysis, setAnalysis] = useState(entry.analysis)
+  const [analysis, setAnalysis] = useState(myAnalysis[0])
 
   const { mood, subject, summary, negative, color } = analysis
   const analysisData = [
@@ -30,11 +30,13 @@ const Editor = ({ entry }: { entry: any }) => {
     data: value,
     onSave: async (_value) => {
       setIsLoading(true)
-      const data = await updateEntry(entry.id, _value)
-      setAnalysis(data.analysis)
+      const data = await updateEntry(entry[0].id, _value)
+      setAnalysis(data[0])
       setIsLoading(false)
     },
   })
+
+  console.log()
 
   return (
     <Grid container spacing={2}>
